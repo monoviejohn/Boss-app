@@ -4,8 +4,34 @@
 
 > From Hustle to BOSS.
 
-BOSS is an **Economic Legitimacy Infrastructure** for informal businesses in Africa.  
+BOSS is an **Economic Legitimacy Infrastructure** for informal businesses in Africa.
 It helps tailors (and other artisans) become trusted, organised, visible, and bankable.
+
+**Live demo:** [boss-africa.vercel.app](https://boss-africa.vercel.app)
+
+**Screenshots:**
+
+![BOS Trust Score](./screenshots/bos-score.png)
+*Real-time trust score, computed from order completion, repeat customers, and payment consistency*
+
+| Smart Pricing Calculator | Earnings |
+|---|---|
+| ![Pricing calculator](./screenshots/pricing.png) | ![Earnings](./screenshots/earnings.png) |
+
+*(Add screenshots to a `/screenshots` folder in the repo root for these to render.)*
+
+---
+
+## Why BOSS Exists
+
+Most tailors and artisans in Nigeria's informal economy run their business from memory and WhatsApp — no records, no way to prove income, no path to credit. BOSS turns everyday business activity (orders, payments, repeat customers) into a **trust score** that makes an informal business legible to banks, lenders, and customers, without requiring the tailor to change how they already work day-to-day.
+
+## What Makes This Interesting Technically
+
+- **Real-time trust scoring**: the BOS Score is recomputed from live order/payment state — a weighted model across completion rate, repeat customers, payment consistency, and revenue signal — not a static field.
+- **State-heavy, flow-based UI**: navigation is built around modal "Flows" (AddOrder, OrderDetail, CustomerDetail, Reminders) layered over a persistent tab shell, with a floating action sheet for entry points — closer to a native app interaction model than typical CRUD screens.
+- **Offline-resilient data layer**: `lib/db.js` pairs Supabase with a localStorage cache so the app stays usable on unreliable connections, a real constraint for the target users.
+- **Public-facing invoice pages** generated per order, with payment details (bank/crypto) auto-embedded — solving distribution without requiring the customer to have an account.
 
 ---
 
@@ -119,7 +145,7 @@ Computed from real business activity. Range: 0–100.
 | Revenue Signal | 20% |
 | Overdue Penalty | −5% per overdue order |
 
-Levels: **New → Building → Growing → Trusted**  
+Levels: **New → Building → Growing → Trusted**
 Credit Readiness: **Low / Medium / High**
 
 ---
@@ -210,5 +236,5 @@ Vercel auto-deploys on push. Add all env variables in Vercel → Project → Set
 
 ---
 
-© 2026 Monoversal Hub. All rights reserved.  
+© 2026 Monoversal Hub. All rights reserved.
 BOSS — Build Trust. Grow Faster.
