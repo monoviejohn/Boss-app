@@ -118,7 +118,7 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
       const tailorId=await db.getTailorId();
       if(!tailorId)return;
       const data=await db.createReviewRequest({tailorId, orderId: order.id});
-      if(!data){ toast("❌ Failed to create review request"); return; }
+      if(!data){ toast("❌ Review system not ready. Run DB migration in Supabase."); return; }
       const reviewUrl=`${process.env.NEXT_PUBLIC_APP_URL}/review/${data.token}`;
       const msg=`Hi ${customer.name}! 👋\n\nThanks for choosing ${shop}. We'd love your honest feedback — it takes 30 seconds:\n\n${reviewUrl}\n\nYour review helps us grow and helps others find us. Thank you! 🙏`;
       window.open(waLink(customer.phone, msg), "_blank");
@@ -126,7 +126,7 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
       Events.featureUse("request_review", { orderId: order.id });
     }catch(e){
       console.error("[OrderDetailFlow] requestReview", e);
-      toast("❌ Failed. Try again.");
+      toast("❌ Failed. Run DB migration in Supabase Dashboard.");
     }finally{
       setReviewRequesting(false);
     }

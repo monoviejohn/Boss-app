@@ -239,6 +239,19 @@ export function ProfileTab({ onFeedbackTrigger, onTour }) {
         <Input label="Account Name" value={accountName} onChange={e => setAccountName(e.target.value)} placeholder="e.g. CHIDI OKONKWO" />
         <div style={{ height: 1, background: C.border, margin: "4px 0" }} />
         <div style={{ fontSize: 13, fontWeight: 700, color: C.sub }}>🌐 Public Portfolio</div>
+        {tailor?.portfolio_slug && (
+          <div style={{ background: C.s2, border: `1px solid ${C.border}`, borderRadius: 12, padding: "12px", marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <span style={{ fontSize: 13, color: C.sub, fontWeight: 600 }}>Your link:</span>
+              <span style={{ flex: 1, fontSize: 13, fontFamily: "monospace", color: C.accent, background: C.s1, padding: "6px 10px", borderRadius: 8, border: `1px solid ${C.border}`, wordBreak: "break-all" }}>
+                {process.env.NEXT_PUBLIC_APP_URL}/t/{tailor.portfolio_slug}
+              </span>
+              <button className="tap" onClick={() => { navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL}/t/${tailor.portfolio_slug}`); toast("✅ Link copied!"); }} style={{ padding: "8px 12px", fontSize: 12, fontWeight: 700, background: C.accent, color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontFamily: "inherit", minHeight: 40, minWidth: 40 }}>
+                Copy
+              </button>
+            </div>
+          </div>
+        )}
         <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "12px", background: C.s2, borderRadius: 12, border: `1px solid ${C.border}` }}>
           <div onClick={() => setPortfolioVisible(v => !v)}
             style={{ width: 44, height: 26, borderRadius: 13, background: portfolioVisible ? C.green : C.s3, position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
