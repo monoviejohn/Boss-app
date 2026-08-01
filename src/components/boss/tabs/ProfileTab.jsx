@@ -2,9 +2,9 @@
 // src/components/boss/ProfileTab.jsx
 import { useState, useEffect, useMemo, useRef } from "react";
 import { C, S } from "../tokens";
-import { allOrders, orderStatus, computeTrustScore, fmt, getBalance, getTotalPaid } from "../helpers";
+import { allOrders, orderStatus, computeTrustScore, fmt, getBalance, getTotalPaid, generateSlug, makeUniqueSlug } from "../helpers";
 import { useBOSS } from "../context";
-import { Btn, Input } from "../ui";
+import { Btn, Input, Textarea } from "../ui";
 import { SmartPricingCalculator } from "../SmartPricingCalculator";
 import { db } from "../../../lib/db";
 import { feedback } from "../../../lib/feedback";
@@ -21,6 +21,8 @@ export function ProfileTab({ onFeedbackTrigger, onTour }) {
   const [bankName, setBankName] = useState(tailor?.bank_name || "");
   const [accountNumber, setAccountNumber] = useState(tailor?.account_number || "");
   const [accountName, setAccountName] = useState(tailor?.account_name || "");
+  const [craft, setCraft] = useState(tailor?.craft || "");
+  const [portfolioVisible, setPortfolioVisible] = useState(tailor?.portfolio_visible || false);
   const [saved, setSaved] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
   const logoInputRef = useRef(null);
@@ -88,8 +90,17 @@ export function ProfileTab({ onFeedbackTrigger, onTour }) {
   }
 
   async function saveProfile() {
+    const baseSlug = generateSlug(shop.trim());
+    // Check if slug exists - we'll let the DB unique constraint handle conflicts
+    // The DB will return an error if slug exists, which we could handle, but for now let it fail
     const t = {
-      ...(tailor || {}), shop: shop.trim(), phone: phone.trim(), city: city.trim(),
+      ...(tailor || {}),
+      shop: shop.trim(),
+      phone: phone.trim(),
+      city: city.trim(),
+      craft: craft.trim() || null,
+      portfolio_visible: portfolioVisible,
+      portfolio_slug: tailor?.portfolio_slug || baseSlug, // keep existing or generate new
       bank_name: bankName.trim() || null,
       account_number: accountNumber.trim() || null,
       account_name: accountName.trim() || null,
@@ -220,11 +231,26 @@ export function ProfileTab({ onFeedbackTrigger, onTour }) {
         <Input label="Shop / Business Name *" value={shop} onChange={e => setShop(e.target.value)} placeholder="e.g. Chidi's Fashion House" />
         <Input label="Phone Number" value={phone} onChange={e => setPhone(e.target.value)} type="tel" placeholder="080XXXXXXXX" />
         <Input label="City" value={city} onChange={e => setCity(e.target.value)} placeholder="e.g. Lagos" />
+        <Input label="Craft / Specialty" value={craft} onChange={e => setCraft(e.target.value)} placeholder="e.g. Men's Wear, Bridal, Alterations" />
         <div style={{ height: 1, background: C.border, margin: "4px 0" }} />
         <div style={{ fontSize: 13, fontWeight: 700, color: C.sub }}>💳 Payment Details (appears on customer receipts)</div>
         <Input label="Bank Name" value={bankName} onChange={e => setBankName(e.target.value)} placeholder="e.g. Access Bank" />
         <Input label="Account Number (added to customer receipts)" value={accountNumber} onChange={e => setAccountNumber(e.target.value)} placeholder="0123456789" />
         <Input label="Account Name" value={accountName} onChange={e => setAccountName(e.target.value)} placeholder="e.g. CHIDI OKONKWO" />
+        <div style={{ height: 1, background: C.border, margin: "4px 0" }} />
+        <div style={{ fontSize: 13, fontWeight: 700, color: C.sub }}>🌐 Public Portfolio</div>
+        <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "12px", background: C.s2, borderRadius: 12, border: `1px solid ${C.border}` }}>
+          <div onClick={() => setPortfolioVisible(v => !v)}
+            style={{ width: 44, height: 26, borderRadius: 13, background: portfolioVisible ? C.green : C.s3, position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
+            <div style={{ width: 22, height: 22, borderRadius: 11, background: "#fff", position: "absolute", top: 2, left: portfolioVisible ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{portfolioVisible ? "Public" : "Private"}</div>
+            <div style={{ fontSize: 12, color: C.sub, marginTop: 2 }}>
+              {portfolioVisible ? "Your portfolio is visible at <span style={{color:C.accent}}>boss.app/t/your-slug</span>" : "Hidden from public directory and direct links"}
+            </div>
+          </div>
+        </label>
         <Btn variant={saved ? "green" : "primary"} onClick={saveProfile}>{saved ? "✅ Saved!" : "Save Changes"}</Btn>
       </div>
     </div>

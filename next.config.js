@@ -3,7 +3,6 @@ const withPWA = require("@ducanh2912/next-pwa").default;
 
 const nextConfig = {
   reactCompiler: true,
-  cacheComponents: true,
   turbopack: {},
   async headers() {
     return [

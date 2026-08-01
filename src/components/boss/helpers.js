@@ -31,6 +31,29 @@ export function invoiceUrl(orderId) {
 }
 
 // ─────────────────────────────────────────
+// SLUG GENERATION (for portfolio URLs)
+// ─────────────────────────────────────────
+export function generateSlug(shopName) {
+  if (!shopName) return "tailor";
+  const base = shopName.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return base || "tailor";
+}
+
+export function makeUniqueSlug(baseSlug, existingSlugs) {
+  let slug = baseSlug;
+  let counter = 1;
+  while (existingSlugs.includes(slug)) {
+    counter++;
+    slug = `${baseSlug}-${counter}`;
+  }
+  return slug;
+}
+
+// ─────────────────────────────────────────
 // ORDER FINANCIALS
 // ─────────────────────────────────────────
 export function getBalance(order) {
