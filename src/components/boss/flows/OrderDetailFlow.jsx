@@ -1,9 +1,8 @@
-"use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { C } from "../tokens";
-import { uid, fmt, fmtDate, getBalance, getTotalPaid, getPaymentState, orderStatus, isOverdue, isDueToday, vibrate, waLink, buildReceiptText, buildReminderMsg, addToDeviceCalendar, invoiceUrl } from "../helpers";
+import { uid, fmt, fmtDate, getBalance, getTotalPaid, getPaymentState, orderStatus, isOverdue, isDueToday, vibrate, waLink, buildReceiptText, buildReminderMsg, addToDeviceCalendar, invoiceUrl, resizeImageFile } from "../helpers";
 import { useBOSS } from "../context";
-import { Btn, Input } from "../ui";
+import { Btn, Input, Textarea } from "../ui";
 import { StatusStepper, MeasGrid } from "../cards";
 import { db } from "../../../lib/db";
 import { feedback } from "../../../lib/feedback";
@@ -42,8 +41,13 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
   const[lightboxUrl,setLightboxUrl]=useState(null);
   const[heroIndex,setHeroIndex]=useState(0);
   const photoInputRef=useRef(null);
+  const portfolioFileRef=useRef(null);
   const payRef=useRef(null);
   const[receiptPrompt,setReceiptPrompt]=useState(null);
+  const[portfolioPrompt,setPortfolioPrompt]=useState(null);
+  const[portfolioFiles,setPortfolioFiles]=useState([]);
+  const[portfolioCaption,setPortfolioCaption]=useState("");
+  const[portfolioUploading,setPortfolioUploading]=useState(false);
   const { status: shareStatus, sharing, shareReceipt } = useShareReceipt();
   const found=(()=>{for(const c of customers){const o=(c.orders||[]).find(x=>x.id===orderId);if(o)return{order:o,customer:c};}return null;})();
   if(!found||!open)return null;
@@ -66,6 +70,43 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
     const next=customers.map(c=>c.id===customer.id?{...c,measurements:meas}:c);
     setCustomers(next);
     await db.updateCustomer(customer.id, {measurements: meas});
+  }
+
+  async function handlePortfolioFiles(e){
+    const files=Array.from(e.target.files||[]); e.target.value="";
+    if(!files.length)return;
+    setPortfolioFiles(files);
+    setPortfolioCaption("");
+    setPortfolioPrompt({order, customer});
+  }
+
+  async function submitPortfolio(){
+    if(portfolioFiles.length===0 || portfolioUploading)return;
+    const tailorId=await db.getTailorId();
+    if(!tailorId)return;
+    setPortfolioUploading(true);
+    try {
+      const uploadedUrls=[];
+      for(const file of portfolioFiles){
+        const resizedFile=await resizeImageFile(file, 1200);
+        const url=await db.uploadPortfolioImage(tailorId, resizedFile);
+        if(url)uploadedUrls.push(url);
+      }
+      if(uploadedUrls.length){
+        for(const url of uploadedUrls){
+          await db.addPortfolioItem({tailorId, orderId: order.id, imageUrl: url, caption: portfolioCaption});
+        }
+        toast("✅ "+(uploadedUrls.length===1?"Photo added to portfolio":"Photos added to portfolio"));
+        setPortfolioPrompt(null);
+        setPortfolioFiles([]);
+        setPortfolioCaption("");
+      }
+    }catch(e){
+      console.error("[OrderDetailFlow] portfolio upload", e);
+      toast("❌ Upload failed. Try again.");
+    }finally{
+      setPortfolioUploading(false);
+    }
   }
   async function recordPay(){
     const amt=parseFloat(payAmt);if(!amt||amt<=0){toast("⚠️ Enter an amount");return;}
@@ -263,21 +304,28 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
           )}
         </div>
 
-        {/* ── Style Photos ── */}
+{/* ── Style Photos ── */}
         <div style={cardStyle}>
           <div style={{fontSize:13,fontWeight:700,color:C.sub,marginBottom:12}}>Style Photos</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gap:8}}>
             {(order.imageUrls||[]).map((url,i)=>(
               <div key={i} className="tap" onClick={()=>setLightboxUrl(url)}
                 style={{aspectRatio:1,borderRadius:12,overflow:"hidden",background:C.s3,cursor:"pointer",position:"relative"}}>
-                <img src={url} alt="" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
-              </div>
+              <img src={url} alt="" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
+            </div>
             ))}
             {(order.imageUrls?.length||0) < 5 && (
               <button onClick={()=>photoInputRef.current?.click()}
                 style={{aspectRatio:1,borderRadius:12,border:`1.5px dashed ${C.border2}`,background:C.s2,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,color:C.sub,cursor:"pointer",fontFamily:"inherit"}}>
-                +
-              </button>
+              +
+            </button>
+            )}
+            {orderStatus(order)==="Delivered" && (
+              <button onClick={()=>portfolioFileRef.current?.click()}
+                style={{aspectRatio:1,borderRadius:12,border:`1.5px dashed ${C.accent}`,background:`${C.accent}15`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:C.accent,cursor:"pointer",fontFamily:"inherit"}}>
+              📁
+              <div style={{fontSize:10,marginTop:2,fontWeight:700}}>Portfolio</div>
+            </button>
             )}
           </div>
           <input ref={photoInputRef} type="file" accept="image/*" multiple style={{display:"none"}} onChange={async (e)=>{
@@ -292,6 +340,7 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
               toast("✅ "+(urls.length===1?"Photo added":"Photos added"));
             }
           }}/>
+          <input ref={portfolioFileRef} type="file" accept="image/*" multiple style={{display:"none"}} onChange={handlePortfolioFiles}/>
         </div>
 
         {/* ── Payment Details for Receipts ── */}
@@ -408,6 +457,36 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
             waReceipt();
           }} style={{marginBottom:12}}><span>💬</span> Send on WhatsApp</Btn>
           <Btn variant="outline" onClick={()=>setReceiptPrompt(null)}>Skip</Btn>
+        </div>
+      </div>
+    )}
+    {portfolioPrompt&&(
+      <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"flex-end"}}>
+        <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.6)"}} onClick={()=>{setPortfolioPrompt(null);setPortfolioFiles([]);setPortfolioCaption("");}}/>
+        <div className="anim-slide" style={{position:"relative",zIndex:1,background:C.s1,borderRadius:"32px 32px 0 0",padding:"28px 24px 48px",width:"100%"}}>
+          <div style={{fontSize:24,marginBottom:8,textAlign:"center"}}>📁</div>
+          <div style={{fontSize:19,fontWeight:900,color:C.text,marginBottom:4,textAlign:"center"}}>
+            Add to Portfolio
+          </div>
+          <div style={{fontSize:14,color:C.sub,lineHeight:1.6,marginBottom:16,textAlign:"center"}}>
+            Add {portfolioFiles.length} photo{portfolioFiles.length>1?"s":""} from <strong>{portfolioPrompt.order?.type||"this order"}</strong> to your public portfolio.
+          </div>
+          {portfolioFiles.map((file,i)=>(
+            <div key={i} style={{marginBottom:12}}>
+              <img src={URL.createObjectURL(file)} alt="" style={{width:"100%",maxHeight:160,borderRadius:12,objectFit:"cover",marginBottom:8}}/>
+              <Textarea
+                placeholder="Add a caption (optional)"
+                value={portfolioCaption}
+                onChange={(e)=>setPortfolioCaption(e.target.value)}
+                maxLength={200}
+                rows={2}
+              />
+            </div>
+          ))}
+          <Btn variant="green" onClick={submitPortfolio} disabled={portfolioUploading} style={{marginBottom:12,width:"100%"}}>
+            {portfolioUploading?"Uploading…":"✅ Add to Portfolio"}
+          </Btn>
+          <Btn variant="outline" onClick={()=>{setPortfolioPrompt(null);setPortfolioFiles([]);setPortfolioCaption("");}}>Cancel</Btn>
         </div>
       </div>
     )}

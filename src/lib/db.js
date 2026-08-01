@@ -554,6 +554,40 @@ async function updateBosScore(tailorId) {
     if (error) console.error("[db.removeOrderImage]", error);
   },
 
+  // ── Portfolio Photos (Supabase Storage) ────────────────────────────────
+  async uploadPortfolioImage(tailorId, file) {
+    try {
+      const client = await getBrowserClient();
+      const ext = "webp";
+      const path = `${tailorId}/${crypto.randomUUID()}.${ext}`;
+      const { error } = await client.storage
+        .from("portfolio-photos")
+        .upload(path, file, { contentType: "image/webp" });
+      if (error) { console.error("[db.uploadPortfolioImage] upload failed:", path, error); return null; }
+      const { data } = client.storage.from("portfolio-photos").getPublicUrl(path);
+      return data.publicUrl;
+    } catch (e) {
+      console.error("[db.uploadPortfolioImage]", e);
+      return null;
+    }
+  },
+
+  async addPortfolioItem({ tailorId, orderId, imageUrl, caption }) {
+    try {
+      const client = await getBrowserClient();
+      const { data, error } = await client
+        .from("portfolio_items")
+        .insert({ tailor_id: tailorId, order_id: orderId, image_url: imageUrl, caption: caption || null })
+        .select("id, created_at")
+        .single();
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.error("[db.addPortfolioItem]", e);
+      return null;
+    }
+  },
+
   // Get the internal tailor UUID (needed for addCustomer/addOrder targeted writes)
   // Auto-creates the tailors row if missing (defensive guard for existing users
   // who signed up before the auto-profile trigger was added).

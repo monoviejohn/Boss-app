@@ -359,3 +359,36 @@ export function addToDeviceCalendar({ title, date, notes, location }) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+// ─────────────────────────────────────────
+// IMAGE RESIZE (client-side, max 1200px)
+// ─────────────────────────────────────────
+export function resizeImageFile(file, maxDimension = 1200) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      let { width, height } = img;
+      if (width > height) {
+        if (width > maxDimension) {
+          height = Math.round(height * maxDimension / width);
+          width = maxDimension;
+        }
+      } else {
+        if (height > maxDimension) {
+          width = Math.round(width * maxDimension / height);
+          height = maxDimension;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => {
+        const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, ".webp"), { type: "image/webp" });
+        resolve(resizedFile);
+      }, "image/webp", 0.85);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
