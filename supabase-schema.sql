@@ -10,6 +10,9 @@ create table if not exists tailors (
   bank_code              text,
   account_number         text,
   account_name           text,
+  portfolio_slug         text unique,
+  portfolio_visible      boolean default false,
+  craft                  text,
   bos_score              integer default 0 check (bos_score >= 0 and bos_score <= 100),
   bos_score_updated_at   timestamptz,
   self_declared_score    integer default 0,
@@ -76,6 +79,47 @@ create index if not exists payments_tailor_idx   on payments(tailor_id);
 create index if not exists payments_recorded_idx on payments(recorded_at);
 
 
+-- Portfolio items (photos from delivered orders)
+create table if not exists portfolio_items (
+  id              uuid primary key default uuid_generate_v4(),
+  tailor_id       uuid references tailors(id) on delete cascade not null,
+  order_id        uuid references orders(id) on delete set null,
+  image_url       text not null,
+  caption         text,
+  sort_order      integer default 0,
+  created_at      timestamptz default now()
+);
+create index if not exists portfolio_items_tailor_idx on portfolio_items(tailor_id);
+create index if not exists portfolio_items_order_idx on portfolio_items(order_id);
+
+-- Portfolio reviews (customer reviews via review requests)
+create table if not exists portfolio_reviews (
+  id              uuid primary key default uuid_generate_v4(),
+  tailor_id       uuid references tailors(id) on delete cascade not null,
+  order_id        uuid references orders(id) on delete set null,
+  review_request_id uuid references review_requests(id) on delete set null,
+  reviewer_name   text not null,
+  rating          integer not null check (rating >= 1 and rating <= 5),
+  review_text     text not null,
+  is_public       boolean default false,
+  created_at      timestamptz default now()
+);
+create index if not exists portfolio_reviews_tailor_idx on portfolio_reviews(tailor_id);
+create index if not exists portfolio_reviews_public_idx on portfolio_reviews(tailor_id, is_public) where is_public = true;
+
+-- Review requests (tailor sends to customer via WhatsApp)
+create table if not exists review_requests (
+  id              uuid primary key default uuid_generate_v4(),
+  tailor_id       uuid references tailors(id) on delete cascade not null,
+  order_id        uuid references orders(id) on delete set null,
+  token           text not null unique,
+  sent_at         timestamptz default now(),
+  completed_at    timestamptz
+);
+create index if not exists review_requests_tailor_idx on review_requests(tailor_id);
+create index if not exists review_requests_token_idx on review_requests(token);
+
+
 CREATE TABLE IF NOT EXISTS bos_score_history (
   id              uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   tailor_id       uuid NOT NULL REFERENCES tailors(id) ON DELETE CASCADE,
@@ -97,6 +141,9 @@ alter table customers        enable row level security;
 alter table orders           enable row level security;
 alter table payments         enable row level security;
 alter table bos_score_history enable row level security;
+alter table portfolio_items  enable row level security;
+alter table portfolio_reviews enable row level security;
+alter table review_requests  enable row level security;
 
 
 drop policy if exists "tailors_self"         on tailors;
@@ -120,6 +167,25 @@ create policy "orders_own_tailor" on orders
 
 
 create policy "payments_own_tailor" on payments
+  for all using (tailor_id = (select id from tailors where user_id = auth.uid()));
+
+
+-- portfolio_items: tailor owns their items
+drop policy if exists "portfolio_items_own_tailor" on portfolio_items;
+create policy "portfolio_items_own_tailor" on portfolio_items
+  for all using (tailor_id = (select id from tailors where user_id = auth.uid()));
+
+-- portfolio_reviews: tailor reads all, public reads only is_public=true
+drop policy if exists "portfolio_reviews_own_tailor" on portfolio_reviews;
+create policy "portfolio_reviews_own_tailor" on portfolio_reviews
+  for all using (tailor_id = (select id from tailors where user_id = auth.uid()));
+drop policy if exists "portfolio_reviews_public_read" on portfolio_reviews;
+create policy "portfolio_reviews_public_read" on portfolio_reviews
+  for select using (is_public = true);
+
+-- review_requests: tailor owns their requests
+drop policy if exists "review_requests_own_tailor" on review_requests;
+create policy "review_requests_own_tailor" on review_requests
   for all using (tailor_id = (select id from tailors where user_id = auth.uid()));
 
 
@@ -194,6 +260,34 @@ create policy "Allow authenticated updates"
   on storage.objects for update
   to authenticated
   using (bucket_id = 'order-images');
+
+
+-- ── PORTFOLIO PHOTOS — Storage bucket ───────────────────────────────────
+-- Run this block AFTER creating the bucket in the Supabase Dashboard:
+--   Storage → Create bucket → name: "portfolio-photos" → Public bucket ✅
+--
+-- Or create it via SQL:
+--   insert into storage.buckets (id, name, public)
+--   values ('portfolio-photos', 'portfolio-photos', true)
+--   on conflict (id) do nothing;
+--
+-- Policies:
+insert into storage.buckets (id, name, public)
+values ('portfolio-photos', 'portfolio-photos', true)
+on conflict (id) do nothing;
+
+-- RLS: tailors can only access their own folder (tailor_id/*)
+drop policy if exists "portfolio_photos_own_tailor" on storage.objects;
+create policy "portfolio_photos_own_tailor" on storage.objects
+  for all using (
+    bucket_id = 'portfolio-photos' AND
+    (storage.foldername(name))[1] = (select id::text from tailors where user_id = auth.uid())
+  );
+
+-- Public read access
+drop policy if exists "portfolio_photos_public_read" on storage.objects;
+create policy "portfolio_photos_public_read" on storage.objects
+  for select using (bucket_id = 'portfolio-photos');
 
 
 -- ═══════════════════════════════════════════════════════════════
