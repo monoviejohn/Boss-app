@@ -2,7 +2,7 @@
 
 const s = {
   section: {
-    background: "linear-gradient(160deg, #0A0A0A 0%, #1A1A1A 50%, #0F1A2E 100%)",
+    background: "linear-gradient(160deg, #1C1C1C 0%, #242424 50%, #1C1C1C 100%)",
     padding: "100px 24px 64px",
   },
   inner: {
@@ -10,9 +10,9 @@ const s = {
   },
   badge: {
     display: "inline-block",
-    backgroundColor: "rgba(0,102,204,0.20)",
-    border: "1px solid rgba(0,102,204,0.40)",
-    color: "#93C5FD",
+    backgroundColor: "rgba(139,106,20,0.20)",
+    border: "1px solid rgba(139,106,20,0.40)",
+    color: "#D4A84B",
     fontSize: 12, fontWeight: 700, textTransform: "uppercase",
     letterSpacing: 1,
     padding: "6px 16px", borderRadius: 100,
@@ -24,7 +24,7 @@ const s = {
     marginBottom: 16,
   },
   headlineAccent: {
-    color: "#0066CC",
+    color: "#B8860B",
   },
   sub: {
     fontSize: 18, color: "rgba(255,255,255,0.65)",
@@ -32,11 +32,11 @@ const s = {
     marginBottom: 32,
   },
   ctaBtn: {
-    backgroundColor: "#0066CC", color: "#FFFFFF",
+    backgroundColor: "#8B6A14", color: "#FFFFFF",
     height: 58, width: "100%", maxWidth: 340,
     borderRadius: 16, fontSize: 16, fontWeight: 800,
     border: "none", cursor: "pointer", fontFamily: "inherit",
-    boxShadow: "0 4px 24px rgba(0,102,204,0.45)",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.30)",
     marginBottom: 12, display: "block", textAlign: "center",
     lineHeight: "58px", textDecoration: "none",
   },
@@ -59,7 +59,7 @@ const s = {
   phoneFrame: {
     width: 260, height: 480, borderRadius: 36,
     background: "#F5F5F7",
-    border: "6px solid #2C2C2E",
+    border: "6px solid #383838",
     boxShadow: "0 24px 80px rgba(0,0,0,0.60)",
     margin: "0 auto",
     overflow: "hidden",
@@ -67,13 +67,13 @@ const s = {
   },
   phoneHeader: {
     height: 80,
-    background: "linear-gradient(135deg,#1A1A1A,#2C2C2E)",
+    background: "linear-gradient(135deg,#242424,#383838)",
     padding: "14px 16px",
     display: "flex", alignItems: "center", gap: 10,
   },
   avatar: {
     width: 36, height: 36, borderRadius: 10,
-    backgroundColor: "#0066CC",
+    backgroundColor: "#8B6A14",
     display: "flex", alignItems: "center", justifyContent: "center",
     color: "#FFFFFF", fontSize: 12, fontWeight: 800,
     flexShrink: 0, lineHeight: "36px",
@@ -111,7 +111,7 @@ const s = {
   },
   navCenter: {
     width: 32, height: 32, borderRadius: "50%",
-    backgroundColor: "#0066CC",
+    backgroundColor: "#8B6A14",
     display: "flex", alignItems: "center", justifyContent: "center",
     color: "#FFFFFF", fontSize: 16, fontWeight: 700,
   },

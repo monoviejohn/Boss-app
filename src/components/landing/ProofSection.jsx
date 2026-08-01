@@ -26,7 +26,7 @@ const s = {
     textAlign: "center",
   },
   statNum: {
-    fontSize: 40, fontWeight: 900, color: "#0066CC",
+    fontSize: 40, fontWeight: 900, color: "#8B6A14",
     lineHeight: 1,
   },
   statLabel: {
@@ -77,7 +77,7 @@ const s = {
 const testimonials = [
   {
     initials: "MT",
-    bg: "#0066CC",
+    bg: "#8B6A14",
     name: "Mama Titi Couture",
     location: "📍 Mushin, Lagos",
     quote: "Before BOSS I was always asking customers to come back for re-measuring. Now I open the app and their measurements are right there. I have not lost a measurement since I started using it.",

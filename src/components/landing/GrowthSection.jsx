@@ -52,7 +52,7 @@ const s = {
     textAlign: "center", marginTop: 36, lineHeight: 1.5,
   },
   microLink: {
-    color: "#0066CC", fontWeight: 700, fontSize: 15,
+    color: "#8B6A14", fontWeight: 700, fontSize: 15,
     textAlign: "center", display: "block", marginTop: 8,
     textDecoration: "none", cursor: "pointer",
   },

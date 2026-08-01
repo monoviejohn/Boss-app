@@ -5,7 +5,7 @@ const s = {
     padding: "0 16px",
   },
   block: {
-    background: "linear-gradient(160deg, #003D99 0%, #0066CC 60%, #0080FF 100%)",
+    background: "linear-gradient(160deg, #1C1C1C 0%, #242424 50%, #8B6A14 100%)",
     borderRadius: 24,
     padding: "64px 24px",
     textAlign: "center",
@@ -27,7 +27,7 @@ const s = {
   },
   btn: {
     display: "inline-block",
-    backgroundColor: "#FFFFFF", color: "#0066CC",
+    backgroundColor: "#8B6A14", color: "#FFFFFF",
     height: 58, borderRadius: 16, fontSize: 16, fontWeight: 800,
     width: "100%", maxWidth: 300,
     boxShadow: "0 4px 20px rgba(0,0,0,0.25)",

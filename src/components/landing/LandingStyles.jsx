@@ -67,7 +67,7 @@ export default function LandingStyles() {
       .cursor::after {
         content: "|";
         animation: cursorBlink 1s infinite;
-        color: #0066CC;
+        color: #8B6A14;
         font-weight: 300;
       }
       @media (max-width: 390px) {

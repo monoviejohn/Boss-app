@@ -29,8 +29,8 @@ const s = {
   },
   tag: {
     display: "inline-block",
-    backgroundColor: "rgba(0,102,204,0.10)",
-    color: "#0066CC", fontSize: 11, fontWeight: 700,
+    backgroundColor: "rgba(139,106,20,0.10)",
+    color: "#8B6A14", fontSize: 11, fontWeight: 700,
     textTransform: "uppercase",
     borderRadius: 100, padding: "4px 12px",
     marginBottom: 12,

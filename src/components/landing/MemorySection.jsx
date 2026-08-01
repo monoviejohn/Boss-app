@@ -2,7 +2,7 @@
 
 const s = {
   section: {
-    background: "linear-gradient(160deg, #0A0A0A 0%, #1A2040 100%)",
+    background: "linear-gradient(160deg, #1C1C1C 0%, #242424 100%)",
     padding: "72px 24px",
     color: "#FFFFFF",
   },
@@ -12,7 +12,7 @@ const s = {
   eyebrow: {
     fontSize: 11, fontWeight: 700, textTransform: "uppercase",
     letterSpacing: 1.2,
-    color: "rgba(147,197,253,0.80)",
+    color: "rgba(212,168,75,0.80)",
     marginBottom: 12,
   },
   headline: {

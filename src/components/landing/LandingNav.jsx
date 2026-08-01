@@ -10,8 +10,8 @@ const style = {
     transition: "background-color 0.3s ease, box-shadow 0.3s ease",
   },
   navScrolled: {
-    backgroundColor: "#FFFFFF",
-    boxShadow: "0 1px 0 #E5E5EA",
+    backgroundColor: "#1C1C1C",
+    boxShadow: "0 1px 0 rgba(255,255,255,0.08)",
   },
   navTransparent: {
     backgroundColor: "transparent",
@@ -23,24 +23,25 @@ const style = {
   },
   logoBox: {
     width: 32, height: 32, borderRadius: 8,
-    backgroundColor: "#0066CC",
+    backgroundColor: "#1C1C1C",
+    border: "1px solid #8B6A14",
     display: "flex", alignItems: "center", justifyContent: "center",
     fontWeight: 900, fontSize: 16, color: "#FFFFFF",
   },
-  logoTxt: (scrolled) => ({
+  logoTxt: () => ({
     fontSize: 20, fontWeight: 900,
-    color: scrolled ? "#111111" : "#FFFFFF",
+    color: "#FFFFFF",
   }),
   right: {
     display: "flex", alignItems: "center", gap: 12,
   },
-  signIn: (scrolled) => ({
+  signIn: {
     fontSize: 14, fontWeight: 600, textDecoration: "none",
-    color: scrolled ? "#6E6E73" : "rgba(255,255,255,0.8)",
-    minHeight: 48, display: "flex", alignItems: "center", padding: "0 8px",
-  }),
+    color: "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.25)",
+    minHeight: 48, display: "flex", alignItems: "center", padding: "0 8px", borderRadius: 10,
+  },
   startBtn: {
-    backgroundColor: "#0066CC", color: "#FFFFFF",
+    backgroundColor: "#8B6A14", color: "#FFFFFF",
     height: 38, padding: "0 16px", borderRadius: 12,
     fontSize: 14, fontWeight: 800, border: "none",
     cursor: "pointer", fontFamily: "inherit",
@@ -61,10 +62,10 @@ export default function LandingNav() {
     <nav style={{ ...style.nav, ...(scrolled ? style.navScrolled : style.navTransparent) }}>
       <a href="/" style={style.logo}>
         <div style={style.logoBox}>B</div>
-        <span style={style.logoTxt(scrolled)}>BOSS</span>
+        <span style={style.logoTxt()}>BOSS</span>
       </a>
       <div style={style.right}>
-        <a href="/app" style={style.signIn(scrolled)}>Sign In</a>
+        <a href="/app" style={style.signIn}>Sign In</a>
         <a href="/app" style={style.startBtn} className="tap-target">Start Free</a>
       </div>
     </nav>

@@ -25,11 +25,11 @@ const s = {
   connector: {
     position: "absolute", left: 19, top: 40, bottom: -16,
     width: 2,
-    background: "linear-gradient(#0066CC 0%, #E5E5EA 100%)",
+    background: "linear-gradient(#8B6A14 0%, #E5E5EA 100%)",
   },
   circle: {
     width: 40, height: 40, borderRadius: "50%",
-    backgroundColor: "#0066CC", color: "#FFFFFF",
+    backgroundColor: "#8B6A14", color: "#FFFFFF",
     fontSize: 14, fontWeight: 800,
     display: "flex", alignItems: "center", justifyContent: "center",
     flexShrink: 0, position: "relative", zIndex: 1,
@@ -57,7 +57,7 @@ const s = {
   },
   microCtaBtn: {
     display: "inline-block",
-    backgroundColor: "#0066CC", color: "#FFFFFF",
+    backgroundColor: "#8B6A14", color: "#FFFFFF",
     height: 50, padding: "0 28px", borderRadius: 14,
     fontSize: 15, fontWeight: 800, lineHeight: "50px",
     textDecoration: "none", border: "none", cursor: "pointer",
@@ -70,7 +70,7 @@ const steps = [
     num: "01",
     title: "Create your customer",
     body: "Type their name. BOSS saves them instantly. Phone number optional.",
-    hint: <div className="cursor" style={{ width: 160, padding: "8px 12px", borderRadius: 8, border: "1px solid #0066CC", fontSize: 13, color: "#111" }}>Chidi Okonkwo</div>,
+    hint: <div className="cursor" style={{ width: 160, padding: "8px 12px", borderRadius: 8, border: "1px solid #8B6A14", fontSize: 13, color: "#111" }}>Chidi Okonkwo</div>,
   },
   {
     num: "02",
@@ -100,7 +100,7 @@ const steps = [
     body: "In Progress → Ready → Delivered. Always know what stage every order is at.",
     hint: (
       <div style={{ display: "flex", gap: 6 }}>
-        <span style={{ padding: "3px 8px", borderRadius: 100, fontSize: 11, fontWeight: 600, backgroundColor: "#0066CC", color: "#FFFFFF" }}>● In Progress</span>
+        <span style={{ padding: "3px 8px", borderRadius: 100, fontSize: 11, fontWeight: 600, backgroundColor: "#8B6A14", color: "#FFFFFF" }}>● In Progress</span>
         <span style={{ padding: "3px 8px", borderRadius: 100, fontSize: 11, fontWeight: 600, backgroundColor: "#F5F5F7", color: "#8E8E93" }}>○ Ready</span>
         <span style={{ padding: "3px 8px", borderRadius: 100, fontSize: 11, fontWeight: 600, backgroundColor: "#F5F5F7", color: "#8E8E93" }}>○ Delivered</span>
       </div>

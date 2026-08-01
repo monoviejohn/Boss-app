@@ -12,7 +12,7 @@ const s = {
   },
   logoBox: {
     width: 28, height: 28, borderRadius: 6,
-    backgroundColor: "#0066CC",
+    backgroundColor: "#8B6A14",
     display: "flex", alignItems: "center", justifyContent: "center",
     fontWeight: 900, fontSize: 14, color: "#FFFFFF", flexShrink: 0,
   },
