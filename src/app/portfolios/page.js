@@ -86,24 +86,24 @@ async function PortfoliosContent() {
 
       {/* Filters */}
       <div style={{ background: C.s1, borderRadius: 16, padding: "16px", marginBottom: 20, border: `1px solid ${C.border}` }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div>
-            <label style={{ fontSize: 12, color: C.sub, fontWeight: 600, marginBottom: 6, display: "block" }}>City</label>
+            <label style={{ fontSize: 12, color: C.sub, fontWeight: 600, marginBottom: 8, display: "block" }}>City</label>
             <select
               defaultValue=""
               onChange={e => { window.location.href = `/portfolios?city=${encodeURIComponent(e.target.value)}`; }}
-              style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.s1, color: C.text, fontSize: 15, fontFamily: "inherit", outline: "none" }}
+              style={{ width: "100%", padding: "17px 16px", borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.s1, color: C.text, fontSize: 16, fontFamily: "inherit", outline: "none", minHeight: 48 }}
             >
               <option value="">All Cities</option>
               {cities.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <div>
-            <label style={{ fontSize: 12, color: C.sub, fontWeight: 600, marginBottom: 6, display: "block" }}>Craft</label>
+            <label style={{ fontSize: 12, color: C.sub, fontWeight: 600, marginBottom: 8, display: "block" }}>Craft</label>
             <select
               defaultValue=""
               onChange={e => { window.location.href = `/portfolios?craft=${encodeURIComponent(e.target.value)}`; }}
-              style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.s1, color: C.text, fontSize: 15, fontFamily: "inherit", outline: "none" }}
+              style={{ width: "100%", padding: "17px 16px", borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.s1, color: C.text, fontSize: 16, fontFamily: "inherit", outline: "none", minHeight: 48 }}
             >
               <option value="">All Crafts</option>
               {crafts.map(c => <option key={c} value={c}>{c}</option>)}
@@ -124,8 +124,8 @@ async function PortfoliosContent() {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {portfolios.map(p => (
-            <a key={p.tailor.id} href={`/t/${p.tailor.portfolio_slug}`} style={{ textDecoration: "none", color: "inherit" }}>
-              <div style={{ background: C.s1, border: `1px solid ${C.border}`, borderRadius: 16, padding: "16px", display: "flex", gap: 14 }}>
+            <a key={p.tailor.id} href={`/t/${p.tailor.portfolio_slug}`} style={{ textDecoration: "none", color: "inherit", display: "block", minHeight: 48 }}>
+              <div style={{ background: C.s1, border: `1px solid ${C.border}`, borderRadius: 16, padding: "18px", display: "flex", gap: 14, minHeight: 80 }}>
                 {p.tailor.logo_url ? (
                   <img src={p.tailor.logo_url} alt="" style={{ width: 64, height: 64, borderRadius: 14, objectFit: "cover", border: `1px solid ${C.border}`, flexShrink: 0 }} />
                 ) : (

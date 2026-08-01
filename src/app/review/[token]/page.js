@@ -119,6 +119,7 @@ function ReviewForm({ token, tailor, order }) {
   const [reviewText, setReviewText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const scoreColor = tailor.bos_score >= 70 ? "#30D158" : tailor.bos_score >= 45 ? "#FF9F0A" : "#FF453A";
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -155,18 +156,19 @@ function ReviewForm({ token, tailor, order }) {
         <div style={{ fontSize: 13, color: C.sub, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 12, textAlign: "center" }}>
           Your Rating
         </div>
-        <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: 10, marginBottom: 8, minHeight: 56 }}>
           {[1,2,3,4,5].map(star => (
             <button
               key={star}
               type="button"
               onClick={() => { setRating(star); }}
               style={{
-                background: "none", border: "none", padding: 0,
-                cursor: "pointer", fontSize: 44, lineHeight: 1,
+                background: "none", border: "none", padding: 10,
+                cursor: "pointer", fontSize: 40, lineHeight: 1,
                 color: rating >= star ? C.gold : C.s3,
                 transition: "transform 0.1s, color 0.1s",
                 transform: rating === star ? "scale(1.15)" : "scale(1)",
+                minWidth: 48, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center",
               }}
               aria-label={`${star} star${star>1?"s":""}`}
             >
@@ -192,10 +194,10 @@ function ReviewForm({ token, tailor, order }) {
           required
           maxLength={80}
           style={{
-            width: "100%", padding: "14px 16px", borderRadius: 12,
+            width: "100%", padding: "17px 16px", borderRadius: 12,
             border: `1.5px solid ${name && name.length>0 ? C.green : C.border}`,
             background: C.s1, color: C.text, fontSize: 16, fontFamily: "inherit",
-            outline: "none", boxSizing: "border-box",
+            outline: "none", boxSizing: "border-box", minHeight: 48,
           }}
         />
       </div>
@@ -213,7 +215,7 @@ function ReviewForm({ token, tailor, order }) {
           maxLength={1000}
           rows={5}
           style={{
-            width: "100%", padding: "14px 16px", borderRadius: 12,
+            width: "100%", padding: "17px 16px", borderRadius: 12,
             border: `1.5px solid ${reviewText && reviewText.length>0 ? C.green : C.border}`,
             background: C.s1, color: C.text, fontSize: 15, fontFamily: "inherit",
             outline: "none", resize: "vertical", minHeight: 120, boxSizing: "border-box", lineHeight: 1.5,
@@ -233,12 +235,20 @@ function ReviewForm({ token, tailor, order }) {
         </div>
       )}
 
-      {/* Submit */}
+      {/* Trust signal near submit — shows tailor's BOS Score */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: 4, background: `${scoreColor}1A`, border: `1px solid ${scoreColor}40`, borderRadius: 20, padding: "6px 12px", fontWeight: 700, color: scoreColor, fontSize: 12 }}>
+          <span style={{ width: 8, height: 8, borderRadius: "50%", background: scoreColor, flexShrink: 0 }} />
+          BOS Score: {tailor.bos_score || 0}
+        </span>
+      </div>
+
+      {/* Submit — Primary CTA */}
       <button
         type="submit"
         disabled={submitting}
         style={{
-          width: "100%", padding: "16px 20px",
+          width: "100%", padding: "18px 20px", minHeight: 52,
           background: submitting ? `${C.accent}80` : C.accent,
           color: "#fff", border: "none", borderRadius: 14,
           fontSize: 16, fontWeight: 700, fontFamily: "inherit",
