@@ -19,7 +19,7 @@ const C = {
 
 function Loading() {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 24, background: C.bg, color: C.text, fontFamily: "system-ui, -apple-system, sans-serif" }}>
       <div style={{ fontSize: 14, color: C.sub }}>Loading portfolios…</div>
     </div>
   );
@@ -50,23 +50,13 @@ export async function generateMetadata() {
 
 export const dynamic = "force-dynamic";
 
-export default function PortfoliosPage() {
+export default async function PortfoliosPage() {
   return (
-    <html lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
-      </head>
-      <body style={{
-        margin: 0, padding: 0, background: C.bg, color: C.text,
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        minHeight: "100vh",
-        WebkitOverflowScrolling: "touch",
-      }}>
-        <Suspense fallback={<Loading />}>
-          <PortfoliosContent />
-        </Suspense>
-      </body>
-    </html>
+    <Suspense fallback={
+      <Loading />
+    }>
+      <PortfoliosContent />
+    </Suspense>
   );
 }
 
@@ -78,7 +68,7 @@ async function PortfoliosContent() {
   const crafts = [...new Set(portfolios.map(p => p.tailor?.craft).filter(Boolean))].sort();
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: "24px 20px 48px", display: "flex", flexDirection: "column", gap: 0 }}>
+    <div style={{ maxWidth: 600, margin: "0 auto", padding: "24px 20px 48px", display: "flex", flexDirection: "column", gap: 0, minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "system-ui, -apple-system, sans-serif", WebkitOverflowScrolling: "touch" }}>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 30, fontWeight: 900, letterSpacing: "-1px", color: C.text, marginBottom: 6 }}>Find a Tailor</div>
         <div style={{ fontSize: 15, color: C.sub }}>Browse portfolios, reviews, and contact directly via WhatsApp</div>

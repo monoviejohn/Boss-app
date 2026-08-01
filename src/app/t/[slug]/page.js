@@ -84,21 +84,37 @@ export const dynamic = "force-dynamic";
 export default async function PortfolioPage({ params }) {
   const data = await getPortfolio(params.slug);
 
-  return (
-    <html lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
-      </head>
-      <body style={{
-        margin: 0, padding: 0, background: C.bg, color: C.text,
+  if (!data) {
+    return (
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        minHeight: "100vh", padding: 24,
+        background: C.bg, color: C.text,
         fontFamily: "system-ui, -apple-system, sans-serif",
-        minHeight: "100vh",
-        WebkitOverflowScrolling: "touch",
       }}>
-        <Suspense fallback={<div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}><div style={{ fontSize: 14, color: C.sub }}>Loading portfolio…</div></div>}>
-          <PortfolioClient initialData={data} slug={params.slug} />
-        </Suspense>
-      </body>
-    </html>
+        <div style={{ textAlign: "center", maxWidth: 320 }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
+          <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>Portfolio Not Found</div>
+          <div style={{ fontSize: 14, color: C.sub, lineHeight: 1.6 }}>
+            This portfolio may be private or the link is invalid.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Suspense fallback={
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        minHeight: "100vh", padding: 24,
+        background: C.bg, color: C.text,
+        fontFamily: "system-ui, -apple-system, sans-serif",
+      }}>
+        <div style={{ fontSize: 14, color: C.sub }}>Loading portfolio…</div>
+      </div>
+    }>
+      <PortfolioClient initialData={data} slug={params.slug} />
+    </Suspense>
   );
 }
