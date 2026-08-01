@@ -10,15 +10,6 @@ create table if not exists tailors (
   bank_code              text,
   account_number         text,
   account_name           text,
-  virtual_account_number text unique,
-  virtual_bank_name      text,
-  virtual_account_name   text,
-  virtual_account_status text default 'inactive'
-                         check (virtual_account_status in ('inactive','active','suspended')),
-  paystack_customer_code text,
-  paystack_dva_id        text,
-  wallet_balance         numeric(14,2) default 0 check (wallet_balance >= 0),
-  wallet_last_updated_at timestamptz,
   bos_score              integer default 0 check (bos_score >= 0 and bos_score <= 100),
   bos_score_updated_at   timestamptz,
   self_declared_score    integer default 0,
@@ -75,33 +66,14 @@ create table if not exists payments (
   tailor_id              uuid references tailors(id) on delete cascade not null,
   amount                 numeric(12,2) not null,
   method                 text default 'cash'
-                         check (method in ('cash','paystack','virtual_account','withdrawal','other')),
+                         check (method in ('cash','withdrawal','other')),
   paystack_ref           text,
-  virtual_account_number text,
-  transfer_code          text,
-  sender_name            text,
   notes                  text,
   recorded_at            timestamptz default now()
 );
 create index if not exists payments_order_idx    on payments(order_id);
 create index if not exists payments_tailor_idx   on payments(tailor_id);
 create index if not exists payments_recorded_idx on payments(recorded_at);
-
-
-create table if not exists withdrawals (
-  id               uuid primary key default uuid_generate_v4(),
-  tailor_id        uuid references tailors(id) on delete cascade not null,
-  amount           numeric(12,2) not null,
-  destination_bank text,
-  destination_acct text,
-  destination_name text,
-  paystack_ref     text,
-  status           text default 'pending'
-                   check (status in ('pending','processing','completed','failed')),
-  requested_at     timestamptz default now(),
-  completed_at     timestamptz
-);
-create index if not exists withdrawals_tailor_idx on withdrawals(tailor_id);
 
 
 CREATE TABLE IF NOT EXISTS bos_score_history (
@@ -170,18 +142,6 @@ drop trigger if exists orders_updated_at on orders;
 create trigger orders_updated_at
   before update on orders
   for each row execute function update_updated_at();
-
-
--- Wallet increment RPC
-create or replace function increment_wallet_balance(p_tailor_id uuid, p_amount numeric)
-returns void language plpgsql security definer as $$
-begin
-  update tailors
-  set wallet_balance = coalesce(wallet_balance,0) + p_amount,
-      wallet_last_updated_at = now()
-  where id = p_tailor_id;
-end;
-$$;
 
 
 -- Auto-profile trigger
