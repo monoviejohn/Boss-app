@@ -588,6 +588,24 @@ async function updateBosScore(tailorId) {
     }
   },
 
+  // ── Review Requests ───────────────────────────────────────────────────
+  async createReviewRequest({ tailorId, orderId }) {
+    try {
+      const client = await getBrowserClient();
+      const token = crypto.randomUUID();
+      const { data, error } = await client
+        .from("review_requests")
+        .insert({ tailor_id: tailorId, order_id: orderId || null, token })
+        .select("id, token")
+        .single();
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.error("[db.createReviewRequest]", e);
+      return null;
+    }
+  },
+
   // Get the internal tailor UUID (needed for addCustomer/addOrder targeted writes)
   // Auto-creates the tailors row if missing (defensive guard for existing users
   // who signed up before the auto-profile trigger was added).

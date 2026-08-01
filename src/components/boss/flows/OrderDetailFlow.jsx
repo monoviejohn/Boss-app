@@ -48,6 +48,7 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
   const[portfolioFiles,setPortfolioFiles]=useState([]);
   const[portfolioCaption,setPortfolioCaption]=useState("");
   const[portfolioUploading,setPortfolioUploading]=useState(false);
+  const[reviewRequesting,setReviewRequesting]=useState(false);
   const { status: shareStatus, sharing, shareReceipt } = useShareReceipt();
   const found=(()=>{for(const c of customers){const o=(c.orders||[]).find(x=>x.id===orderId);if(o)return{order:o,customer:c};}return null;})();
   if(!found||!open)return null;
@@ -106,6 +107,28 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
       toast("❌ Upload failed. Try again.");
     }finally{
       setPortfolioUploading(false);
+    }
+  }
+
+  async function requestReview(){
+    if(reviewRequesting)return;
+    if(!customer.phone) { toast("⚠️ Customer has no phone number"); return; }
+    setReviewRequesting(true);
+    try {
+      const tailorId=await db.getTailorId();
+      if(!tailorId)return;
+      const data=await db.createReviewRequest({tailorId, orderId: order.id});
+      if(!data){ toast("❌ Failed to create review request"); return; }
+      const reviewUrl=`${process.env.NEXT_PUBLIC_APP_URL}/review/${data.token}`;
+      const msg=`Hi ${customer.name}! 👋\n\nThanks for choosing ${shop}. We'd love your honest feedback — it takes 30 seconds:\n\n${reviewUrl}\n\nYour review helps us grow and helps others find us. Thank you! 🙏`;
+      window.open(waLink(customer.phone, msg), "_blank");
+      toast("✅ Review request sent via WhatsApp");
+      Events.featureUse("request_review", { orderId: order.id });
+    }catch(e){
+      console.error("[OrderDetailFlow] requestReview", e);
+      toast("❌ Failed. Try again.");
+    }finally{
+      setReviewRequesting(false);
     }
   }
   async function recordPay(){
@@ -390,6 +413,14 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
             {shareStatus === "idle"      && "📤 Share Receipt"}
           </button>
           <div style={{height:10}}/>
+          {orderStatus(order)==="Delivered" && customer.phone && (
+            <>
+              <Btn variant="outline" onClick={requestReview} disabled={reviewRequesting} style={{padding:"14px 0",fontSize:14,textAlign:"center"}}>
+                {reviewRequesting?"Sending…":"⭐ Request Review"}
+              </Btn>
+              <div style={{height:10}}/>
+            </>
+          )}
           <Btn variant="outline" onClick={()=>{
             const url = invoiceUrl(order.id);
             window.open(url, "_blank");
