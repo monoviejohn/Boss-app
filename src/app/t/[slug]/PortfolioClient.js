@@ -2,6 +2,7 @@
 // src/app/t/[slug]/PortfolioClient.js
 // Client Component — interactive portfolio UI
 import { useState, useEffect } from "react";
+import { useBOSS } from "@/components/boss/context";
 
 const C = {
   bg:      "#F5F5F7",
@@ -24,6 +25,7 @@ function fmtDate(d) {
 }
 
 export default function PortfolioClient({ initialData, slug }) {
+  const { toast } = useBOSS();
   const [data, setData] = useState(initialData);
   const [showAllGallery, setShowAllGallery] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
@@ -57,9 +59,18 @@ export default function PortfolioClient({ initialData, slug }) {
     : null;
   const scoreColor = tailor.bos_score >= 70 ? C.green : tailor.bos_score >= 45 ? C.amber : C.red;
 
-  // Limit above-fold: show max 2 gallery items and 2 reviews initially
   const visibleItems = showAllGallery ? items : items.slice(0, 2);
   const visibleReviews = showAllReviews ? reviews : reviews.slice(0, 2);
+
+  const portfolioUrl = `${process.env.NEXT_PUBLIC_APP_URL}/t/${tailor.portfolio_slug}`;
+
+  function copyLink() {
+    navigator.clipboard.writeText(portfolioUrl).then(() => {
+      toast("✅ Link copied!");
+    }).catch(() => {
+      toast("❌ Failed to copy");
+    });
+  }
 
   return (
     <div style={{ maxWidth: 520, margin: "0 auto", padding: "24px 20px 48px", display: "flex", flexDirection: "column", gap: 0 }}>
@@ -173,6 +184,33 @@ export default function PortfolioClient({ initialData, slug }) {
               Message {tailor.shop} on WhatsApp
             </span>
           </a>
+
+          {/* Share/Copy Portfolio Link */}
+          <button
+            onClick={() => {
+              const url = `${process.env.NEXT_PUBLIC_APP_URL}/t/${tailor.portfolio_slug}`;
+              navigator.clipboard.writeText(url).then(() => {
+                toast("✅ Link copied!");
+              }).catch(() => {
+                toast("❌ Failed to copy");
+              });
+            }}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+              padding: "14px 0", textDecoration: "none", marginTop: 10,
+              background: C.s1, border: `1.5px solid ${C.border}`, borderRadius: 16,
+              color: C.text, fontSize: 15, fontWeight: 600, fontFamily: "inherit",
+              cursor: "pointer", width: "100%", minHeight: 48,
+            }}
+          >
+            <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+            <span style={{ fontSize: 15, fontWeight: 600, color: C.text }}>
+              Copy Portfolio Link
+            </span>
+          </button>
         </div>
       )}
 
