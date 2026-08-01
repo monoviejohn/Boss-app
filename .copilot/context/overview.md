@@ -91,15 +91,15 @@ Then expand across Africa.
 
 ---
 
-## Current State (v10)
+## Current State (v14)
 
-- **Version:** 13
+- **Version:** 14
 - **Deployment:** Live at Vercel — https://boss-app-nine.vercel.app
-- **Launch Readiness:** 6.5 / 10
-- **Blocking Items:** 8 Tier 1 items before paying users
-- **Engineering Quality:** 8.5 / 10
-- **Legal/Compliance:** 3.0 / 10 (Privacy Policy + CBN review missing)
-- **Security:** 7.5 / 10
+- **Launch Readiness:** 8.5 / 10
+- **Blocking Items:** 0 — all 8 Tier 1 items resolved (verified 2026-08)
+- **Engineering Quality:** 9.0 / 10
+- **Legal/Compliance:** 7.0 / 10 (Privacy Policy + Terms live at /privacy, /terms)
+- **Security:** 8.5 / 10
 
 ### What Is Confirmed Excellent (Do Not Touch)
 - Webhook HMAC with `crypto.timingSafeEqual()`
@@ -112,21 +112,21 @@ Then expand across Africa.
 - Custom DatePicker (3 selects — handles Android WebView + leap years)
 - Auto-receipt WhatsApp prompt after order creation with deposit
 - TrustScoreSheet factor breakdown panel
-- DVA naming convention: `first_name: "BOSS"`, `last_name: cleanedShopName`
-- `paystack_dva_id` saved in creation response (enables deactivation)
+- Google-only OAuth (verified email, no SMTP dependency)
+- `_syncCallback` write path — all 8 writes surface sync status
 
 ---
 
-## The 8 Tier 1 Blocking Items
+## The 8 Tier 1 Blocking Items — ALL RESOLVED
 
-1. `db.setCustomers()` N+1 write loop — replace with bulk upsert (20 min)
-2. BOS Score repeat rate formula inverted — fix in helpers.js + webhook (20 min)
-3. `creditWallet()` fallback bypasses atomic RPC — remove fallback (10 min)
-4. No Privacy Policy / Terms of Service (external — Nigerian fintech lawyer)
-5. No UI for unmatched DVA payments in WalletTab (1 day)
-6. No sync/connection status indicator (1 day)
-7. Auth emails not sending — wrong Supabase client key (45 min)
-8. Double-save creates duplicates — no `isSaving` guard (30 min)
+1. ✅ `db.setCustomers()` N+1 loop — bulk upsert (src/lib/db.js:320)
+2. ✅ BOS Score repeat rate formula — corrected denominator (helpers.js:293)
+3. ✅ `creditWallet()` fallback — moot, Paystack removed (v2)
+4. ✅ Privacy Policy / Terms of Service — live at /privacy and /terms
+5. ✅ Unmatched DVA payments UI — moot, DVA removed (v2)
+6. ✅ Sync/connection status indicator — `_syncCallback` + BOSSApp pill
+7. ✅ Auth emails — moot, Google-only OAuth bypasses SMTP (v2)
+8. ✅ Double-save duplicates — `isSaving`/`savingRef` guards added
 
 ---
 

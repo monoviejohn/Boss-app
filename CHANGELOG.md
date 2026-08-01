@@ -43,21 +43,21 @@
 - [ ] BUG-AUTH — Auth emails
 - [ ] BUG-SAVE — Double-save guard
 
-## v13.0 — 2026-05 (current)
+## v14.0 — 2026-08 (current)
 
-### What Changed from v10
-- Framework files added: .copilot/ + .github/ AI engineering team
-- 13 agents, 5 prompt commands, 3 instruction files, CHANGELOG
-- Upstash Redis packages confirmed in package.json
+### What Changed from v13
+- All 8 Tier 1 blocking items resolved (verified in code 2026-08)
+- Landing page sections and navigation copy updated
 
-### Tier 1 Blocking Items (carry forward from v10)
-- [ ] PARTIAL-01 — db.setCustomers() N+1 loop
-- [ ] PARTIAL-02 — BOS Score repeat rate formula
-- [ ] MISSING-01 — Privacy Policy / Terms of Service
-- [ ] MISSING-02 — Unmatched DVA payments UI
-- [ ] MISSING-03 — Sync/connection status indicator
-- [ ] BUG-AUTH   — Auth emails not sending
-- [ ] BUG-SAVE   — Double-save duplicate orders
+### Tier 1 Blocking Items — All Resolved
+- [x] PARTIAL-01 — db.setCustomers() N+1 loop → bulk upsert (src/lib/db.js:320)
+- [x] PARTIAL-02 — BOS Score repeat rate formula → corrected denominator (src/components/boss/helpers.js:293)
+- [x] PARTIAL-03 — creditWallet fallback → moot, Paystack removed (v2)
+- [x] MISSING-01 — Privacy Policy / Terms of Service → /privacy + /terms pages live
+- [x] MISSING-02 — Unmatched DVA payments UI → moot, DVA removed (v2)
+- [x] MISSING-03 — Sync/connection status indicator → _syncCallback + BOSSApp sync pill
+- [x] BUG-AUTH — Auth emails → moot, Google-only OAuth bypasses SMTP (v2); residual is Supabase dashboard SMTP/Site URL config, no code
+- [x] BUG-SAVE — Double-save duplicate orders → isSaving/savingRef guards (AddOrderFlow, AddClientFlow, CustomerDetailFlow)
 
 ### Next Session Should Start With
-Run /status for full dashboard. Priority: BUG-AUTH (auth emails).
+Run /status for full dashboard. All Tier 1 items are code-complete.

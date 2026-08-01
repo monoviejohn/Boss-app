@@ -17,61 +17,48 @@ Check `.copilot/spec/` for any open specs.
 ```
 ════════════════════════════════════════════════
   BOSS — Launch Readiness Dashboard
-  v10 · $(date)
+  v14 · $(date)
 ════════════════════════════════════════════════
 
-OVERALL SCORE: 6.5 / 10
+OVERALL SCORE: 8.5 / 10
 
-Engineering Quality:    8.5/10  ████████░░
-Security:               7.5/10  ███████░░░
-UX/Accessibility:       7.0/10  ███████░░░
-Legal/Compliance:       3.0/10  ███░░░░░░░
-Business Readiness:     5.0/10  █████░░░░░
+Engineering Quality:    9.0/10  █████████░
+Security:               8.5/10  █████████░
+UX/Accessibility:       8.0/10  ████████░░
+Legal/Compliance:       7.0/10  ███████░░░
+Business Readiness:     7.0/10  ███████░░░
 
 ════════════════════════════════════════════════
   🔴 TIER 1 — BLOCKING (must fix before paying users)
 ════════════════════════════════════════════════
 
-[ ] PARTIAL-01  db.setCustomers() N+1 loop
-                → Replace with bulk upsert (2 calls, not a for-loop)
-                → File: src/lib/db.js
-                → Effort: 20 min
+✅ PARTIAL-01  db.setCustomers() N+1 loop
+              → Fixed with bulk upsert (onConflict:"id")
+              → File: src/lib/db.js:320
 
-[ ] PARTIAL-02  BOS Score repeat rate formula inverted
-                → repeatRate = repeatCustomers / customers.length
-                → File: helpers.js + webhook route.js
-                → Effort: 20 min
+✅ PARTIAL-02  BOS Score repeat rate formula
+              → Fixed: repeatCustomers / customersWhoHaveOrders
+              → File: src/components/boss/helpers.js:293
 
-[ ] PARTIAL-03  creditWallet() fallback bypasses atomic RPC
-                → Remove the direct wallet_balance update fallback
-                → File: paystack-webhook/route.js
-                → Effort: 10 min
+✅ PARTIAL-03  creditWallet() fallback
+              → Moot — Paystack removed (v2)
 
-[ ] MISSING-01  No Privacy Policy / Terms of Service
-                → Nigerian NDPA 2023 requires before data collection
-                → Action: Engage Nigerian fintech lawyer
-                → Effort: External
+✅ MISSING-01  Privacy Policy / Terms of Service
+              → Live at /privacy and /terms
 
-[ ] MISSING-02  No UI for unmatched DVA payments
-                → Transfers with no matching order land in wallet silently
-                → File: WalletTab in tabs.jsx
-                → Effort: 1 day
+✅ MISSING-02  Unmatched DVA payments UI
+              → Moot — DVA removed (v2)
 
-[ ] MISSING-03  No sync/connection status indicator
-                → Supabase write failures are silent on 3G
-                → Effort: 1 day
+✅ MISSING-03  Sync/connection status indicator
+              → _syncCallback in db.js + BOSSApp sync pill
 
-[ ] BUG-AUTH    Auth emails not sending
-                → Signup confirmation, forgot-password, reset all fail
-                → Root cause: anon key used instead of SERVICE_ROLE_KEY
-                → Files: signup/route.js, forgot-password/route.js, reset-password/route.js
-                → Also: configure Supabase dashboard SMTP + email templates
-                → Effort: 45 min + Supabase dashboard config
+✅ BUG-AUTH    Auth emails not sending
+              → Moot — Google-only OAuth bypasses SMTP (v2)
+              → Residual: Supabase dashboard SMTP/Site URL, no code
 
-[ ] BUG-SAVE    Double-save creates duplicate orders
-                → No isSaving guard in AddOrderFlow
-                → File: flows.jsx — save() function
-                → Effort: 30 min
+✅ BUG-SAVE    Double-save creates duplicate orders
+              → Fixed with isSaving/savingRef guards
+              → Files: AddOrderFlow, AddClientFlow, CustomerDetailFlow
 
 ════════════════════════════════════════════════
   🟡 TIER 2 — LAUNCH QUALITY (fix within first week)
@@ -96,10 +83,9 @@ Business Readiness:     5.0/10  █████░░░░░
 ✅ ErrorBoundary at BOSSClient level
 ✅ Custom DatePicker (Android WebView safe)
 ✅ Promise.all([minWait, dataLoad]) splash transition
-✅ DVA naming: first_name="BOSS", last_name=cleanedShopName
-✅ paystack_dva_id saved for deactivation
 ✅ Customer/tailor phone excluded from public invoice API
 ✅ Offline mode fully removed
+✅ Google-only OAuth (verified email, no SMTP dependency)
 
 ════════════════════════════════════════════════
   📋 OPEN SPECS
@@ -111,9 +97,7 @@ Business Readiness:     5.0/10  █████░░░░░
   🎯 NEXT PRIORITY ACTION
 ════════════════════════════════════════════════
 
-Start with BUG-AUTH — auth emails not sending.
-Run: /spec auth-email-fix
-This unblocks the entire user acquisition funnel.
-Single most impactful fix in the codebase right now.
+All Tier 1 items are code-complete. Move to Tier 2:
+A-01 BOS Score explainability panel — show tailors what drives their score.
 ════════════════════════════════════════════════
 ```

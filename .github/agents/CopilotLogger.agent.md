@@ -57,9 +57,7 @@ Append to `CHANGELOG.md` in this format:
   - Will be addressed in: next session / after legal review / Phase 2
 
 ### Tier 1 Blocking Items Remaining
-- [ ] PARTIAL-01 — db.setCustomers() N+1 loop
-- [ ] BUG-AUTH — Auth emails not sending
-... (update the list)
+- All 8 Tier 1 items resolved as of v14 (2026-08) — see CHANGELOG.md
 ```
 
 ---
