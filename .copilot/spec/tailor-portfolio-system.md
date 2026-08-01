@@ -1,5 +1,5 @@
 # Spec: tailor-portfolio-system
-**Status:** draft
+**Status:** approved
 **Type:** feature
 **Created:** 2026-08-01
 **Author:** developer (portfolio feature build)
