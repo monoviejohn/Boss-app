@@ -426,7 +426,7 @@ function BOSSApp(){
     </div></>
   );
 
-  // Nav: Today | Clients | [+] | Wallet | Settings
+  // Nav: Today | Clients | [+] | Earnings | Profile
   // Nav icon SVGs — matching reference design
 
   const NAV_LEFT=[
