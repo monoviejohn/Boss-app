@@ -118,7 +118,14 @@ export function SetupScreen({ onComplete, onCompleteAndAddOrder }) {
       self_declared_score: hasSelfData ? selfScore : 0,
       self_declared_years: yearsInBusiness || null,
     };
-    await db.setTailor(t);
+    try {
+      await db.setTailor(t);
+    } catch (e) {
+      console.error("[setup] save failed", e);
+      setMsg("⚠️ Couldn't save yet. Check your connection and try again.");
+      setSaving(false);
+      return;
+    }
     localStorage.setItem("boss_onboarding_v1_complete", "1");
     setSaving(false);
     Events.completeJourney("setup", 0);
@@ -199,7 +206,13 @@ export function SetupScreen({ onComplete, onCompleteAndAddOrder }) {
               <button onClick={async () => {
                 if (!shop.trim()) { setMsg("⚠️ Enter your shop name to continue"); return; }
                 setMsg("");
-                await db.setTailor({ shop: shop.trim(), phone: phone.trim(), city: city === "Other" ? cityOther.trim() : city });
+                try {
+                  await db.setTailor({ shop: shop.trim(), phone: phone.trim(), city: city === "Other" ? cityOther.trim() : city });
+                } catch (e) {
+                  console.error("[setup] save failed", e);
+                  setMsg("⚠️ Couldn't save yet. Check your connection.");
+                  return;
+                }
                 setStep(2);
               }}
                 style={btnPrimary}>

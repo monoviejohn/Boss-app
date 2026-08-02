@@ -2,7 +2,7 @@
 // src/components/boss/ProfileTab.jsx
 import { useState, useEffect, useMemo, useRef } from "react";
 import { C, S } from "../tokens";
-import { allOrders, orderStatus, computeTrustScore, fmt, getBalance, getTotalPaid, generateSlug, makeUniqueSlug } from "../helpers";
+import { allOrders, orderStatus, computeTrustScore, fmt, getBalance, getTotalPaid, generateSlug } from "../helpers";
 import { useBOSS } from "../context";
 import { Btn, Input, Textarea } from "../ui";
 import { SmartPricingCalculator } from "../SmartPricingCalculator";
@@ -90,9 +90,7 @@ export function ProfileTab({ onFeedbackTrigger, onTour }) {
   }
 
   async function saveProfile() {
-    const baseSlug = generateSlug(shop.trim());
-    // Check if slug exists - we'll let the DB unique constraint handle conflicts
-    // The DB will return an error if slug exists, which we could handle, but for now let it fail
+    const baseSlug = tailor?.portfolio_slug || generateSlug(shop.trim());
     const t = {
       ...(tailor || {}),
       shop: shop.trim(),
@@ -100,12 +98,30 @@ export function ProfileTab({ onFeedbackTrigger, onTour }) {
       city: city.trim(),
       craft: craft.trim() || null,
       portfolio_visible: portfolioVisible,
-      portfolio_slug: tailor?.portfolio_slug || baseSlug, // keep existing or generate new
+      portfolio_slug: baseSlug, // keep existing or generate new
       bank_name: bankName.trim() || null,
       account_number: accountNumber.trim() || null,
       account_name: accountName.trim() || null,
     };
-    await db.setTailor(t); setTailor(t); setSaved(true);
+    try {
+      await db.setTailor(t);
+      setTailor(t); setSaved(true);
+    } catch (e) {
+      console.error("[profile] save failed", e);
+      const isSlugConflict = e?.code === "23505" || /portfolio_slug/i.test(e?.message || "");
+      if (isSlugConflict) {
+        const suffix = Date.now().toString().slice(-4);
+        t.portfolio_slug = `${baseSlug}-${suffix}`;
+        try {
+          await db.setTailor(t);
+          setTailor(t); setSaved(true);
+          return;
+        } catch (e2) {
+          console.error("[profile] save retry failed", e2);
+        }
+      }
+      toast?.("❌ Couldn't save changes. Check your connection.");
+    }
   }
 
   async function saveNotifPrefs(prefs){

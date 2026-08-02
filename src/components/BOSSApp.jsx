@@ -180,7 +180,10 @@ function BOSSApp(){
   }
 
   const toast=useCallback((msg)=>{setToastMsg(msg);setToastKey(k=>k+1);},[]);
-  const setTailor=useCallback(async(t)=>{setTailorState(t);await db.setTailor(t);},[]);
+  const setTailor=useCallback(async(t)=>{
+    setTailorState(t);
+    try { await db.setTailor(t); } catch (e) { console.error("[setTailor] persist failed", e); }
+  },[]);
   const setCustomers=useCallback(async(c)=>{
     setCustomersState(c);
     await db.setCustomers(c);

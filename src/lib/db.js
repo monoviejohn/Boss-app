@@ -213,7 +213,7 @@ async function updateBosScore(tailorId) {
       if (!authUser) return null;
       const { data } = await client
         .from("tailors")
-        .select("id,shop,phone,city,bank_name,bank_code,account_number,account_name,bos_score,bos_score_updated_at,google_drive_refresh_token,notif_delivery,notif_payments,notif_briefing,logo_url,meas_unit,custom_meas_fields,meas_config")
+        .select("id,shop,phone,city,bank_name,bank_code,account_number,account_name,bos_score,bos_score_updated_at,google_drive_refresh_token,notif_delivery,notif_payments,notif_briefing,logo_url,meas_unit,custom_meas_fields,meas_config,craft,self_declared_score,self_declared_years,portfolio_slug,portfolio_visible")
         .eq("user_id", authUser.id)
         .single();
       if (data) { lsSet("boss_tailor", data); _cachedTailorId = data.id; }
@@ -273,6 +273,7 @@ async function updateBosScore(tailorId) {
     } catch (e) {
       console.error("[db.setTailor]", e);
       _syncCallback?.("error");
+      throw e;
     }
   },
 
