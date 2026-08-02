@@ -261,6 +261,8 @@ async function updateBosScore(tailorId) {
       if (profile.self_declared_score  !== undefined && profile.self_declared_score > 0)
         payload.self_declared_at = new Date().toISOString();
       if (profile.logo_url           !== undefined) payload.logo_url           = profile.logo_url           || null;
+      if (profile.portfolio_slug     !== undefined) payload.portfolio_slug     = profile.portfolio_slug     || null;
+      if (profile.portfolio_visible  !== undefined) payload.portfolio_visible  = profile.portfolio_visible;
       if (profile.meas_unit          !== undefined) payload.meas_unit          = profile.meas_unit          || "inches";
       if (profile.custom_meas_fields !== undefined) payload.custom_meas_fields = profile.custom_meas_fields || null;
       if (profile.meas_config       !== undefined) payload.meas_config       = profile.meas_config       || null;
