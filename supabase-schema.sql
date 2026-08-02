@@ -308,6 +308,7 @@ CREATE TABLE IF NOT EXISTS feedback (
 
 ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "tailors_own_feedback" ON feedback;
 CREATE POLICY "tailors_own_feedback" ON feedback
   FOR ALL USING (
     tailor_id = (SELECT id FROM tailors WHERE user_id = auth.uid())
@@ -333,6 +334,7 @@ CREATE TABLE IF NOT EXISTS referrals (
 
 ALTER TABLE referrals ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "referrals_own" ON referrals;
 CREATE POLICY "referrals_own" ON referrals
   FOR ALL USING (
     referrer_id = (SELECT id FROM tailors WHERE user_id = auth.uid())
@@ -437,6 +439,7 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
 
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "tailors_own_push_subs" ON push_subscriptions;
 CREATE POLICY "tailors_own_push_subs" ON push_subscriptions
   FOR ALL USING (
     tailor_id = (SELECT id FROM tailors WHERE user_id = auth.uid())
