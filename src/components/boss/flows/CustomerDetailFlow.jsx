@@ -30,12 +30,10 @@ export function CustomerDetailFlow({ open, onClose, customerId, onAddOrder, onOp
 
   async function handleMeasConfigChange(config) {
     setTailor({ ...tailor, meas_config: config });
-    await db.setTailor({ ...tailor, meas_config: config });
   }
 
   async function handleMeasUnitToggle(next) {
     setTailor({ ...tailor, meas_unit: next });
-    await db.setTailor({ ...tailor, meas_unit: next });
     toast(`📏 Switched to ${next}`);
   }
 

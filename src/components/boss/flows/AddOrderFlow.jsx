@@ -17,7 +17,7 @@ import { useShareReceipt } from "../useShareReceipt";
 const STEP_LABELS = ["Customer", "Payment", "Delivery & Fit", "Review"];
 
 export function AddOrderFlow({ open, onClose, prefilledCid, onFeedbackTrigger }) {
-  const { customers, setCustomers, toast, tailor } = useBOSS();
+  const { customers, setCustomers, toast, tailor, setTailor } = useBOSS();
   const pre = customers.find(c => c.id === prefilledCid);
   const [step, setStep] = useState(1);
   const [name, setName] = useState(pre?.name || ""); const [phone, setPhone] = useState(pre?.phone || "");
@@ -350,16 +350,14 @@ export function AddOrderFlow({ open, onClose, prefilledCid, onFeedbackTrigger })
                     onChange={setMeas}
                     gender={gender}
                     measConfig={tailor?.meas_config || null}
-                    onConfigChange={async newConfig => {
-                      await db.setTailor({
-                        ...(tailor || {}),
-                        meas_config: newConfig,
-                      });
+                    onConfigChange={newConfig => {
+                      setTailor({ ...(tailor || {}), meas_config: newConfig });
                     }}
                     unit={tailor?.meas_unit || "inches"}
-                    onUnitToggle={u =>
-                      db.setTailor({ ...(tailor || {}), meas_unit: u })
-                    }
+                    onUnitToggle={u => {
+                      setTailor({ ...(tailor || {}), meas_unit: u });
+                      toast(`📏 Switched to ${u}`);
+                    }}
                   />
                 </div>
               )}

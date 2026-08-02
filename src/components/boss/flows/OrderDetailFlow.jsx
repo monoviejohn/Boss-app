@@ -35,7 +35,7 @@ function VoiceNotePlayer({url}){
 }
 
 export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger}){
-  const{customers,setCustomers,toast}=useBOSS();
+  const{customers,setCustomers,toast,setTailor}=useBOSS();
   const[payAmt,setPayAmt]=useState("");
   const[confirmDelete,setConfirmDelete]=useState(false);
   const[lightboxUrl,setLightboxUrl]=useState(null);
@@ -430,8 +430,8 @@ export function OrderDetailFlow({open,onClose,orderId,tailor,onFeedbackTrigger})
 
         {/* ── Zone 7: Measurements ── */}
         <div style={cardStyle}>
-          <div style={{fontSize:13,fontWeight:700,color:C.sub,marginBottom:12}}>Measurements (inches)</div>
-          <MeasGrid measurements={customer.measurements||{}} onChange={m=>{updateMeas(m);toast("✅ Saved");}}/>
+          <div style={{fontSize:13,fontWeight:700,color:C.sub,marginBottom:12}}>Measurements ({tailor?.meas_unit || "inches"})</div>
+          <MeasGrid measurements={customer.measurements||{}} onChange={m=>{updateMeas(m);toast("✅ Saved");}} unit={tailor?.meas_unit || "inches"} onUnitToggle={u=>{setTailor({...(tailor||{}),meas_unit:u});toast(`📏 Switched to ${u}`);}}/>
         </div>
 
         {/* ── Zone 8: Danger Zone ── */}

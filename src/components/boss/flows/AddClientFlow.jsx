@@ -9,7 +9,7 @@ import { MeasGrid } from "../cards";
 import { db } from "../../../lib/db";
 
 export function AddClientFlow({ open, onClose, onDone }) {
-  const { customers, setCustomers, toast } = useBOSS();
+  const { customers, setCustomers, toast, tailor, setTailor } = useBOSS();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("female");
@@ -59,8 +59,17 @@ export function AddClientFlow({ open, onClose, onDone }) {
       </div>
       <Input label="Phone Number" value={phone} onChange={e => setPhone(e.target.value)} type="tel" inputMode="tel" placeholder="080XXXXXXXX" />
       <div>
-        <label style={S.label}>Measurements (inches) — optional</label>
-        <MeasGrid measurements={meas} onChange={setMeas} gender={gender} />
+        <label style={S.label}>Measurements ({tailor?.meas_unit || "inches"}) — optional</label>
+        <MeasGrid
+          measurements={meas}
+          onChange={setMeas}
+          gender={gender}
+          unit={tailor?.meas_unit || "inches"}
+          onUnitToggle={u => {
+            setTailor({ ...(tailor || {}), meas_unit: u });
+            toast(`📏 Switched to ${u}`);
+          }}
+        />
       </div>
     </Flow>
   );
