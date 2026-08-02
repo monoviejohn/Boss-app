@@ -406,10 +406,14 @@ ALTER TABLE tailors
   ADD COLUMN IF NOT EXISTS google_drive_refresh_token  text,
   ADD COLUMN IF NOT EXISTS self_declared_years         text,
   ADD COLUMN IF NOT EXISTS logo_url                    text,
+  ADD COLUMN IF NOT EXISTS portfolio_slug              text,
+  ADD COLUMN IF NOT EXISTS portfolio_visible           boolean DEFAULT false,
   ADD COLUMN IF NOT EXISTS meas_unit                   text DEFAULT 'inches',
   ADD COLUMN IF NOT EXISTS custom_meas_fields          jsonb,
   ADD COLUMN IF NOT EXISTS meas_config                 jsonb,
   ADD COLUMN IF NOT EXISTS welcome_sent_at             timestamptz;
+
+CREATE UNIQUE INDEX IF NOT EXISTS tailors_portfolio_slug_key ON tailors(portfolio_slug);
 
 ALTER TABLE orders
   ADD COLUMN IF NOT EXISTS updated_at  timestamptz DEFAULT now(),
