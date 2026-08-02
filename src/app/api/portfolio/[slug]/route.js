@@ -31,7 +31,7 @@ export async function GET(request, { params }) {
 
   if (tailorErr || !tailor) {
     return NextResponse.json(
-      { error: "Portfolio not found. It may be private or the link is invalid." },
+      { error: "Portfolio not found. It may be private or the link is invalid.", detail: tailorErr?.message || null },
       { status: 404 }
     );
   }

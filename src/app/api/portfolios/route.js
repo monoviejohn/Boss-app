@@ -37,7 +37,7 @@ export async function GET(request) {
 
   if (error) {
     console.error("[api/portfolios] query error:", error);
-    return NextResponse.json({ error: "Failed to fetch portfolios" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch portfolios", detail: error.message }, { status: 500 });
   }
 
   const portfolios = (tailors || []).map(t => ({
