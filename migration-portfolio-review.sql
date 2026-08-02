@@ -1,5 +1,9 @@
 -- Migration: portfolio + review system (mobile-copy friendly: one statement per line)
 
+ALTER TABLE tailors ADD COLUMN IF NOT EXISTS craft text;
+ALTER TABLE tailors ADD COLUMN IF NOT EXISTS bos_score integer DEFAULT 0 CHECK (bos_score >= 0 AND bos_score <= 100);
+ALTER TABLE tailors ADD COLUMN IF NOT EXISTS bos_score_updated_at timestamptz;
+ALTER TABLE tailors ADD COLUMN IF NOT EXISTS logo_url text;
 ALTER TABLE tailors ADD COLUMN IF NOT EXISTS portfolio_slug text;
 ALTER TABLE tailors ADD COLUMN IF NOT EXISTS portfolio_visible boolean DEFAULT false;
 CREATE UNIQUE INDEX IF NOT EXISTS tailors_portfolio_slug_key ON tailors(portfolio_slug);
